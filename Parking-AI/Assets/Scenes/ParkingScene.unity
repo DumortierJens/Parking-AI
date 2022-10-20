@@ -2152,6 +2152,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3347734910528775628, guid: 309f22587e1504441a603f5ae3df1943, type: 3}
+      propertyPath: IsGoal
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6349050789497835921, guid: 309f22587e1504441a603f5ae3df1943, type: 3}
       propertyPath: m_Name
       value: Parking

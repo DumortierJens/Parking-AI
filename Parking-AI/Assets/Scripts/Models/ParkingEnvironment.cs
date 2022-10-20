@@ -6,9 +6,14 @@ public class ParkingEnvironment : MonoBehaviour
 {
     private Parking parking;
 
-    void Start()
+    public void Initialize()
     {
         parking = GetComponentInChildren<Parking>();
         parking.Initialize();
+    }
+
+    public ParkingSpot GetTarget()
+    {
+        return parking.GetTarget();
     }
 }

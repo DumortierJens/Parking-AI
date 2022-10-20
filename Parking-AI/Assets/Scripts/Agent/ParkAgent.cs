@@ -7,7 +7,10 @@ using UnityEngine;
 
 public class ParkAgent : Agent
 {
+    private ParkingEnvironment env;
     private Car car;
+    
+    private ParkingSpot target;
 
     private float steeringInput;
     private float accelerationInput;
@@ -15,6 +18,10 @@ public class ParkAgent : Agent
 
     public override void Initialize()
     {
+        env = GetComponentInParent<ParkingEnvironment>();
+        env.Initialize();
+        target = env.GetTarget();
+
         car = GetComponent<Car>();
     }
 
@@ -25,7 +32,7 @@ public class ParkAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-
+        sensor.AddObservation(car.GetSpeed());
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -50,6 +57,26 @@ public class ParkAgent : Agent
         // Get reward for action
         AddReward(-1);
         Debug.Log("Current reward: " + GetCumulativeReward());
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // Check if the car is parked
+        if (other.gameObject.TryGetComponent(out ParkingSpot parkingSpot))
+        {
+            if (parkingSpot.IsTarget)
+            {
+                AddReward(1000);
+                EndEpisode();
+            }
+        }
+
+        // Check for worldborder
+        if (other.gameObject.TryGetComponent(out WorldBorder worldBorder))
+        {
+            AddReward(-1000);
+            EndEpisode();
+        }
     }
 
     private void ResetCar(float x, float z, float rot)
