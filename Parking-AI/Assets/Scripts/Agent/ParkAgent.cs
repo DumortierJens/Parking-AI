@@ -59,6 +59,33 @@ public class ParkAgent : Agent
         Debug.Log("Current reward: " + GetCumulativeReward());
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Check for collision with a car
+        if (collision.gameObject.TryGetComponent(out Car car))
+        {
+            AddReward(-100);
+        }
+
+        // Check for collision with a tree
+        if (collision.gameObject.TryGetComponent(out Tree tree))
+        {
+            AddReward(-100);
+        }
+
+        // Check for collision with a street light
+        if (collision.gameObject.TryGetComponent(out StreetLight streetLight))
+        {
+            AddReward(-100);
+        }
+
+        // Check for collision with a sidewalk
+        if (collision.gameObject.TryGetComponent(out Sidewalk sidewalk))
+        {
+            AddReward(-50);
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         // Check if the car is parked
