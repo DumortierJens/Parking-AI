@@ -61,14 +61,15 @@ public class ParkAgent : Agent
         steeringInput = actions.ContinuousActions[0];
         accelerationInput = actions.ContinuousActions[1];
         breakingInput = (actions.ContinuousActions[2] + 1) / 2f;
-        Debug.Log($"Steering Angle: {steeringInput}, Acceleration: {accelerationInput}, Breaking: {breakingInput}");
+        Debug.Log($"Steering angle: {steeringInput}, Acceleration: {accelerationInput}, Breaking: {breakingInput}");
 
         // Move the car
         car.Move(steeringInput, accelerationInput, breakingInput);
 
         // Get reward for action
-        AddReward(CalculateActionReward());
-        Debug.Log("Current reward: " + GetCumulativeReward());
+        var actionReward = CalculateActionReward();
+        AddReward(actionReward);
+        Debug.Log($"Total reward: {GetCumulativeReward()}, Action reward: {actionReward}");
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -105,7 +106,10 @@ public class ParkAgent : Agent
         {
             if (parkingSpot.IsTarget)
             {
-                AddReward(1000);
+                var finishReward = CalculateFinishReward();
+                AddReward(finishReward);
+                Debug.Log($"Total reward: {GetCumulativeReward()}, Finish reward: {finishReward}");
+
                 EndEpisode();
             }
         }
@@ -134,15 +138,7 @@ public class ParkAgent : Agent
         // Check if car stands still
         var isStandingStill = distTraveled < 0.03;
         var isParked = isStandingStill && distFromTarget < 2;
-        if (isStandingStill && !isParked)
-        {
-            stepsStandingStill++;
-        }
-        else
-        {
-            stepsStandingStill = 0;
-        }
-
+        stepsStandingStill = isStandingStill && !isParked ? stepsStandingStill+1 : 0;
         if (stepsStandingStill > 100)
         {
             AddReward(-5000);
@@ -153,7 +149,7 @@ public class ParkAgent : Agent
         var distProgressReward = distProgress * 10;
         var distTraveledReward = distTraveled * 10;
         var standingStillReward = stepsStandingStill / -10;
-        Debug.Log($"Progress Reward: {distProgressReward}, Distance Traveled Reward: {distTraveledReward}, Standing Still Reward: {standingStillReward}");
+        Debug.Log($"Progress reward: {distProgressReward}, Distance traveled reward: {distTraveledReward}, Standing still reward: {standingStillReward}");
 
         return distProgressReward + distTraveledReward + standingStillReward;
     }
@@ -165,12 +161,15 @@ public class ParkAgent : Agent
         var targetPosition = target.gameObject.transform.position;
         var targetRotation = target.gameObject.transform.rotation;
 
+        // Calculate position reward
         var diffPosition = (currentPosition - targetPosition).magnitude;
-        var diffRotation = Math.Abs(currentRotation.y - targetRotation.y);
+        var positionReward = diffPosition / 3; // 0 - 1
 
-        var posReward = 2000 - (2000 * diffPosition / -2);
-        var rotReward = 4000 - (4000 * diffRotation / -90);
-        return 2000 + posReward + rotReward;
+        // Calculate rotation reward
+        var diffRotation = targetRotation.eulerAngles.y - currentRotation.eulerAngles.y;
+        var rotationReward = Math.Abs((diffRotation < 180 ? diffRotation : diffRotation - 180) - 90) / 90; // 0 - 1
+
+        return 2000 + (2000 * positionReward) + (4000 * rotationReward);
     }
 
     private void ResetCar(float x, float z, float rot)

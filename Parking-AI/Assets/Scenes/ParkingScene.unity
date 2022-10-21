@@ -133,7 +133,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4833759574250909273, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: breakForce
-      value: 0
+      value: 3000
       objectReference: {fileID: 0}
     - target: {fileID: 4833759574250909273, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: motorForce
@@ -2387,6 +2387,10 @@ PrefabInstance:
     - target: {fileID: 6349050789497835921, guid: 309f22587e1504441a603f5ae3df1943, type: 3}
       propertyPath: m_Name
       value: Parking
+      objectReference: {fileID: 0}
+    - target: {fileID: 9153339883134840006, guid: 309f22587e1504441a603f5ae3df1943, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
