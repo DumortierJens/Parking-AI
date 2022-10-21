@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
@@ -16,6 +17,10 @@ public class ParkAgent : Agent
     private float accelerationInput;
     private float breakingInput;
 
+    private Vector3 startPosition;
+    private Vector3 prevPosition;
+    private int stepsStandingStill;
+
     public override void Initialize()
     {
         env = GetComponentInParent<ParkingEnvironment>();
@@ -28,6 +33,10 @@ public class ParkAgent : Agent
     public override void OnEpisodeBegin()
     {
         ResetCar(0, 20, 180);
+
+        startPosition = transform.position;
+        prevPosition = startPosition;
+        stepsStandingStill = 0;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -55,7 +64,7 @@ public class ParkAgent : Agent
         car.Move(steeringInput, accelerationInput, breakingInput);
 
         // Get reward for action
-        AddReward(-1);
+        AddReward(CalculateActionReward());
         Debug.Log("Current reward: " + GetCumulativeReward());
     }
 
@@ -104,6 +113,61 @@ public class ParkAgent : Agent
             AddReward(-1000);
             EndEpisode();
         }
+    }
+
+    private float CalculateActionReward()
+    {
+        // Get observations
+        var currentPosition = transform.position;
+        var targetPosition = target.transform.position;
+
+        // Calculate distance
+        var distFromStart = (startPosition - currentPosition).magnitude;
+        var distFromTarget = (targetPosition - currentPosition).magnitude;
+        var distProgress = distFromStart / (distFromStart + distFromTarget);
+        var distTraveled = (prevPosition - currentPosition).magnitude;
+        prevPosition = currentPosition;
+
+        // Check if car stands still
+        var isStandingStill = distTraveled < 0.03;
+        var isParked = isStandingStill && distFromTarget < 2;
+        if (isStandingStill && !isParked)
+        {
+            stepsStandingStill++;
+        }
+        else
+        {
+            stepsStandingStill = 0;
+        }
+
+        if (stepsStandingStill > 100)
+        {
+            AddReward(-5000);
+            EndEpisode();
+        }
+
+        // Calculate rewards
+        var distProgressReward = distProgress * 10;
+        var distTraveledReward = distTraveled * 10;
+        var standingStillReward = stepsStandingStill / -10;
+        Debug.Log($"Progress Reward: {distProgressReward}, Distance Traveled Reward: {distTraveledReward}, Standing Still Reward: {standingStillReward}");
+
+        return distProgressReward + distTraveledReward + standingStillReward;
+    }
+
+    private float CalculateFinishReward()
+    {
+        var currentPosition = transform.position;
+        var currentRotation = transform.rotation;
+        var targetPosition = target.gameObject.transform.position;
+        var targetRotation = target.gameObject.transform.rotation;
+
+        var diffPosition = (currentPosition - targetPosition).magnitude;
+        var diffRotation = Math.Abs(currentRotation.y - targetRotation.y);
+
+        var posReward = 2000 - (2000 * diffPosition / -2);
+        var rotReward = 4000 - (4000 * diffRotation / -90);
+        return 2000 + posReward + rotReward;
     }
 
     private void ResetCar(float x, float z, float rot)
