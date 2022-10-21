@@ -13,16 +13,28 @@ public class Parking : MonoBehaviour
 
     public void Initialize()
     {
-        parkingSpots = GetComponentsInChildren<ParkingSpot>();
-        freeParkingSpots = parkingSpots.Where(p => !p.IsTarget).ToArray();
-        target = parkingSpots.Where(p => p.IsTarget).FirstOrDefault();
+        UpdateParkingSpots();
 
         carSpawner = GetComponent<CarSpawner>();
         carSpawner.SpawnCars(freeParkingSpots);
     }
 
+    public void Reset()
+    {
+        UpdateParkingSpots();
+
+        carSpawner.ResetSpawnedCars();
+    }
+
     public ParkingSpot GetTarget()
     {
         return target;
+    }
+
+    private void UpdateParkingSpots()
+    {
+        parkingSpots = GetComponentsInChildren<ParkingSpot>();
+        freeParkingSpots = parkingSpots.Where(p => !p.IsTarget).ToArray();
+        target = parkingSpots.Where(p => p.IsTarget).FirstOrDefault();
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StreetLight : MonoBehaviour
+public class Tree : MonoBehaviour
 {
     private Vector3 startPosition;
     private Quaternion startRotation;

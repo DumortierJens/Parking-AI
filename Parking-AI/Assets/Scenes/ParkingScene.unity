@@ -943,7 +943,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad998916b26aa14e8c1dde153729cb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generateCars: 10
+  generateCars: 19
   cars:
   - {fileID: 568796584581658328, guid: 01659b423f2100b4bade80059cffc426, type: 3}
   - {fileID: 568796584581658328, guid: 9f751248d52f92d458dd9f3103815e5d, type: 3}
@@ -2370,6 +2370,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3347734910528775628, guid: 309f22587e1504441a603f5ae3df1943, type: 3}
       propertyPath: IsGoal
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3347734910528775628, guid: 309f22587e1504441a603f5ae3df1943, type: 3}
+      propertyPath: IsTarget
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6349050789497835921, guid: 309f22587e1504441a603f5ae3df1943, type: 3}

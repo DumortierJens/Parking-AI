@@ -25,13 +25,16 @@ public class ParkAgent : Agent
     {
         env = GetComponentInParent<ParkingEnvironment>();
         env.Initialize();
+        
+        car = GetComponent<Car>();
         target = env.GetTarget();
 
-        car = GetComponent<Car>();
+        Debug.Log(target);
     }
 
     public override void OnEpisodeBegin()
     {
+        env.Reset();
         ResetCar(0, 20, 180);
 
         startPosition = transform.position;

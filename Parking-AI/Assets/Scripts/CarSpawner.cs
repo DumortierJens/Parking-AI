@@ -10,6 +10,7 @@ public class CarSpawner : MonoBehaviour
     [SerializeField] private GameObject[] cars;
 
     private System.Random random = new System.Random();
+    private Dictionary<GameObject, ParkingSpot> spawnedCars = new Dictionary<GameObject, ParkingSpot>();
 
     public void SpawnCars(ParkingSpot[] freeParkingSpots)
     {
@@ -25,7 +26,24 @@ public class CarSpawner : MonoBehaviour
             var parkingSpot = freeParkingSpots[parkingSpotIdx];
             
             var offset = new Vector3(0, parkingSpot.transform.position.y, 0);
-            Instantiate(car, parkingSpot.transform.position - offset, parkingSpot.transform.rotation);
+            spawnedCars.Add(Instantiate(car, parkingSpot.transform.position - offset, parkingSpot.transform.rotation), parkingSpot);
+        }
+    }
+
+    public void ResetSpawnedCars()
+    {
+        foreach (var spawnedCar in spawnedCars)
+        {
+            var car = spawnedCar.Key;
+            var parkingSpot = spawnedCar.Value;
+
+            var pos = parkingSpot.transform.position;
+            var rot = parkingSpot.transform.rotation;
+
+            car.transform.position = new Vector3(pos.x, 0.03f, pos.z);
+            car.transform.rotation = rot;
+            car.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            car.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         }
     }
 
