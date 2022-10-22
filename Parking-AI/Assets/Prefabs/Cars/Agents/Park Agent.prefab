@@ -818,6 +818,14 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 2707138020356904998, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
+      propertyPath: m_ForwardFriction.m_Stiffness
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2707138020356904998, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
+      propertyPath: m_SidewaysFriction.m_Stiffness
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3621628449458036317, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
       propertyPath: m_RootOrder
       value: -1
@@ -1249,6 +1257,14 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 2707138020356904998, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
+      propertyPath: m_ForwardFriction.m_Stiffness
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2707138020356904998, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
+      propertyPath: m_SidewaysFriction.m_Stiffness
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3621628449458036317, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
       propertyPath: m_RootOrder
       value: -1
@@ -1436,6 +1452,14 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 2707138020356904998, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
+      propertyPath: m_ForwardFriction.m_Stiffness
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2707138020356904998, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
+      propertyPath: m_SidewaysFriction.m_Stiffness
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3621628449458036317, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
       propertyPath: m_RootOrder
       value: -1
@@ -1526,6 +1550,14 @@ PrefabInstance:
     - target: {fileID: 2707138020356904998, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
       propertyPath: m_Center.y
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2707138020356904998, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
+      propertyPath: m_ForwardFriction.m_Stiffness
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2707138020356904998, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
+      propertyPath: m_SidewaysFriction.m_Stiffness
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3621628449458036317, guid: 0a0690407a089614cba27679e6724b6c, type: 3}
       propertyPath: m_RootOrder

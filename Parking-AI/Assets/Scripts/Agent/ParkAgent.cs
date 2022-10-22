@@ -67,9 +67,9 @@ public class ParkAgent : Agent
         car.Move(steeringInput, accelerationInput, breakingInput);
 
         // Get reward for action
-        var actionReward = CalculateActionReward();
-        AddReward(actionReward);
-        Debug.Log($"Total reward: {GetCumulativeReward()}, Action reward: {actionReward}");
+        AddReward(CalculateActionReward());
+
+        Debug.Log($"Current reward: {GetCumulativeReward()}");
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -77,25 +77,25 @@ public class ParkAgent : Agent
         // Check for collision with a car
         if (collision.gameObject.TryGetComponent(out Car car))
         {
-            AddReward(-100);
+            AddReward(-500);
         }
 
         // Check for collision with a tree
         if (collision.gameObject.TryGetComponent(out Tree tree))
         {
-            AddReward(-100);
+            AddReward(-500);
         }
 
         // Check for collision with a street light
         if (collision.gameObject.TryGetComponent(out StreetLight streetLight))
         {
-            AddReward(-100);
+            AddReward(-500);
         }
 
         // Check for collision with a sidewalk
         if (collision.gameObject.TryGetComponent(out Sidewalk sidewalk))
         {
-            AddReward(-50);
+            AddReward(-300);
         }
     }
 
@@ -106,19 +106,14 @@ public class ParkAgent : Agent
         {
             if (parkingSpot.IsTarget)
             {
-                var finishReward = CalculateFinishReward();
-                AddReward(finishReward);
-                Debug.Log($"Total reward: {GetCumulativeReward()}, Finish reward: {finishReward}");
-
-                EndEpisode();
+                EndEpisode(CalculateFinishReward(), "parked");
             }
         }
 
         // Check for worldborder
         if (other.gameObject.TryGetComponent(out WorldBorder worldBorder))
         {
-            AddReward(-1000);
-            EndEpisode();
+            EndEpisode(-10000, "outside world border");
         }
     }
 
@@ -128,30 +123,41 @@ public class ParkAgent : Agent
         var currentPosition = transform.position;
         var targetPosition = target.transform.position;
 
-        // Calculate distance
-        var distFromStart = (startPosition - currentPosition).magnitude;
+        // Distance to target
+        var distStartTarget = (startPosition - targetPosition).magnitude;
         var distFromTarget = (targetPosition - currentPosition).magnitude;
-        var distProgress = distFromStart / (distFromStart + distFromTarget);
+        var distProgress = (distStartTarget - distFromTarget) / distStartTarget;
+
+        var distProgressReward = Mathf.Pow(distProgress, 3) * 40;
+
+        // Distance traveled
         var distTraveled = (prevPosition - currentPosition).magnitude;
         prevPosition = currentPosition;
 
-        // Check if car stands still
+        var distTraveledReward = distTraveled * 5;
+
+        // Is standing still
         var isStandingStill = distTraveled < 0.03;
         var isParked = isStandingStill && distFromTarget < 2;
-        stepsStandingStill = isStandingStill && !isParked ? stepsStandingStill+1 : 0;
-        if (stepsStandingStill > 100)
-        {
-            AddReward(-5000);
-            EndEpisode();
-        }
+        stepsStandingStill = (isStandingStill && !isParked) ? stepsStandingStill + 1 : 0;
 
-        // Calculate rewards
-        var distProgressReward = distProgress * 10;
-        var distTraveledReward = distTraveled * 10;
         var standingStillReward = stepsStandingStill / -10;
-        Debug.Log($"Progress reward: {distProgressReward}, Distance traveled reward: {distTraveledReward}, Standing still reward: {standingStillReward}");
 
-        return distProgressReward + distTraveledReward + standingStillReward;
+        if (stepsStandingStill > 100)
+            EndEpisode(-2000, "standing still");
+
+        // Return total action reward
+        var actionReward = distProgressReward + distTraveledReward + standingStillReward;
+        Debug.Log($"Total action reward: {actionReward}, Distance progress reward: {distProgressReward}, Distance traveled reward: {distTraveledReward}, Standing still reward: {standingStillReward}");
+        return actionReward;
+    }
+
+    private void EndEpisode(float reward, string message = "")
+    {
+        AddReward(reward);
+
+        Debug.Log($"End of episode {CompletedEpisodes} (reason: '{message}'), total reward: {GetCumulativeReward()}, finish reward: {reward}");
+        EndEpisode();
     }
 
     private float CalculateFinishReward()
