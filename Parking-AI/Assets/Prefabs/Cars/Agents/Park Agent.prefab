@@ -236,7 +236,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 81626a6a1042a134a87cee98a9167ebb, type: 3}
   m_InferenceDevice: 1
   m_BehaviorType: 0
   m_BehaviorName: Park
@@ -296,7 +296,7 @@ MonoBehaviour:
   m_Height: 84
   m_Grayscale: 1
   m_ObservationType: 0
-  m_ObservationStacks: 1
+  m_ObservationStacks: 3
   m_Compression: 1
 --- !u!114 &7423209122276964554
 MonoBehaviour:
@@ -316,7 +316,7 @@ MonoBehaviour:
   m_Height: 84
   m_Grayscale: 1
   m_ObservationType: 0
-  m_ObservationStacks: 1
+  m_ObservationStacks: 3
   m_Compression: 1
 --- !u!114 &3295501418943789353
 MonoBehaviour:

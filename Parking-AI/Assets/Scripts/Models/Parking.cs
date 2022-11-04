@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,25 +6,25 @@ using UnityEngine;
 
 public class Parking : MonoBehaviour
 {
+    private System.Random random = new System.Random();
+
     private CarSpawner carSpawner;
     
     private ParkingSpot[] parkingSpots;
-    private ParkingSpot[] freeParkingSpots;
     private ParkingSpot target;
 
     public void Initialize()
     {
-        UpdateParkingSpots();
+        parkingSpots = GetComponentsInChildren<ParkingSpot>();
 
         carSpawner = GetComponent<CarSpawner>();
-        carSpawner.SpawnCars(freeParkingSpots);
+        carSpawner.Initialize(parkingSpots);
     }
 
     public void Reset()
     {
-        UpdateParkingSpots();
-
-        carSpawner.ResetSpawnedCars();
+        SelectTarget();
+        carSpawner.Spawn(target);
     }
 
     public ParkingSpot GetTarget()
@@ -31,10 +32,13 @@ public class Parking : MonoBehaviour
         return target;
     }
 
-    private void UpdateParkingSpots()
+    private void SelectTarget()
     {
-        parkingSpots = GetComponentsInChildren<ParkingSpot>();
-        freeParkingSpots = parkingSpots.Where(p => !p.IsTarget).ToArray();
-        target = parkingSpots.Where(p => p.IsTarget).FirstOrDefault();
+        // Reset isTarget properties
+        Array.ForEach(parkingSpots, p => p.IsTarget = false);
+        
+        // Set random target
+        target = parkingSpots[random.Next(parkingSpots.Length)];
+        target.IsTarget = true;
     }
 }
