@@ -27,11 +27,11 @@ public class Car : MonoBehaviour
         return GetComponent<Rigidbody>().velocity.magnitude;
     }
 
-    public void Move(float steeringInput, float accelerationInput, float breakingInput)
+    public void Move(float steerInput, float motorInput, float breakInput)
     {
-        currentSteerAngle = steeringInput * maxSteerAngle;
-        currentMotorForce = accelerationInput * motorForce;
-        currentBreakForce = breakingInput * breakForce;
+        currentSteerAngle = steerInput * maxSteerAngle;
+        currentMotorForce = motorInput * motorForce;
+        currentBreakForce = breakInput * breakForce;
 
         HandleSteering();
         HandleMotor();

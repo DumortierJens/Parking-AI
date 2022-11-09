@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ParkingEnvironment : MonoBehaviour
 {
+    [SerializeField] private bool selectRandomTarget;
+
     private Parking parking;
     
     private Tree[] trees;
@@ -13,7 +15,7 @@ public class ParkingEnvironment : MonoBehaviour
     {
         // Init Parking
         parking = GetComponentInChildren<Parking>();
-        parking.Initialize();
+        parking.Initialize(selectRandomTarget);
 
         // Init trees
         trees = GetComponentsInChildren<Tree>();

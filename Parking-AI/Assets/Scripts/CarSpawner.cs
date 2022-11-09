@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CarSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject[] cars;
 
-    private System.Random random = new System.Random();
     private Dictionary<ParkingSpot, GameObject> spawnedCars = new Dictionary<ParkingSpot, GameObject>();
 
     public void Initialize(ParkingSpot[] parkingSpots)
@@ -27,7 +27,7 @@ public class CarSpawner : MonoBehaviour
     {
         foreach(var parkingSpot in parkingSpots)
         {
-            var car = cars[random.Next(cars.Length)];
+            var car = cars[Random.Range(0, cars.Length - 1)];
             var offset = new Vector3(0, parkingSpot.transform.position.y, 0);
             spawnedCars.Add(parkingSpot, Instantiate(car, parkingSpot.transform.position - offset, parkingSpot.transform.rotation));
         }
