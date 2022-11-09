@@ -140,6 +140,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5552730617957177682, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5552730617957177682, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.size
       value: 0
       objectReference: {fileID: 0}
@@ -222,6 +226,26 @@ PrefabInstance:
     - target: {fileID: 7356110920714341555, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_Name
       value: Park Agent
+      objectReference: {fileID: 0}
+    - target: {fileID: 8231679475598687696, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 8231679476177539175, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.406
+      objectReference: {fileID: 0}
+    - target: {fileID: 8231679476793714413, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.406
+      objectReference: {fileID: 0}
+    - target: {fileID: 8231679476989494255, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 8231679477060904368, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.044
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

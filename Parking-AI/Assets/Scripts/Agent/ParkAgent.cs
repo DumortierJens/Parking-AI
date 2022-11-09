@@ -60,7 +60,15 @@ public class ParkAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(car.GetSpeed());
+        var position = car.GetPosition();
+        var velocity = car.GetVelocity();
+        var angularVelocity = car.GetAngularVelocity();
+
+        Debug.Log($"Agent observations: Position: {position}, Velocity: {velocity}, Angular velocity: {angularVelocity}");
+
+        sensor.AddObservation(position); // 2 floats
+        sensor.AddObservation(velocity); // 3 floats
+        sensor.AddObservation(angularVelocity); // 3 floats
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
