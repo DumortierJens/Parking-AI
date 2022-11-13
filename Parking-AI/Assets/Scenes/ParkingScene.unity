@@ -145,7 +145,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5552730617957177682, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5552730617957177682, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
@@ -153,11 +153,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5552730617957177682, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_BrainParameters.m_ActionSpec.BranchSizes.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5552730617957177682, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_BrainParameters.m_ActionSpec.m_NumContinuousActions
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5552730617957177682, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_BrainParameters.m_ActionSpec.BranchSizes.Array.data[0]
@@ -213,15 +213,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6545399418209505731, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: MaxStep
-      value: 2000
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 6765337388090909126, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: DecisionPeriod
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6765337388090909126, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: TakeActionsBetweenDecisions
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7356110920714341555, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_Name
