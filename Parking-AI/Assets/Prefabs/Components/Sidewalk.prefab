@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8984919658809166066}
   - component: {fileID: 5761567464809687505}
   - component: {fileID: 3702476143341482473}
+  - component: {fileID: 9100078621179374878}
   m_Layer: 0
   m_Name: Sidewalk
   m_TagString: Untagged
@@ -97,3 +98,15 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9100078621179374878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4735139572067732316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32ead10b0e3e3214495e6c9a1199e059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -7,9 +7,9 @@ public class CarController : MonoBehaviour
 {
     private Car car;
 
-    private float horizontalInput;
-    private float verticalInput;
-    private float breakingInput;
+    private float steerInput;
+    private float motorInput;
+    private float breakInput;
 
     private void Start()
     {
@@ -19,13 +19,13 @@ public class CarController : MonoBehaviour
     private void FixedUpdate()
     {
         GetInput();
-        car.Move(horizontalInput, verticalInput, breakingInput);
+        car.Move(steerInput, motorInput, breakInput);
     }
 
     private void GetInput()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-        breakingInput = Input.GetKey(KeyCode.Space) ? 1 : 0;
+        steerInput = Input.GetAxis("Horizontal");
+        motorInput = Input.GetAxis("Vertical");
+        breakInput = Input.GetKey(KeyCode.Space) ? 1 : 0;
     }
 }

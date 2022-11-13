@@ -3,45 +3,54 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CarSpawner : MonoBehaviour
 {
-    [SerializeField] private int generateCars;
     [SerializeField] private GameObject[] cars;
 
-    private System.Random random = new System.Random();
+    private Dictionary<ParkingSpot, GameObject> spawnedCars = new Dictionary<ParkingSpot, GameObject>();
 
-    public void SpawnCars(ParkingSpot[] parkingSpots)
+    public void Initialize(ParkingSpot[] parkingSpots)
     {
-        if (generateCars >= parkingSpots.Length)
-        {
-            generateCars = parkingSpots.Length;
-        }
+        SpawnCars(parkingSpots);
+        Array.ForEach(spawnedCars.Keys.ToArray(), p => SetCarState(p, false));
+    }
 
-        var selectedParkingSpots = GetUniqueParkingSpots(generateCars, parkingSpots.Length);
-        foreach (var parkingSpotIdx in selectedParkingSpots)
+    public void Spawn(ParkingSpot target)
+    {
+        Array.ForEach(spawnedCars.Keys.ToArray(), p => SetCarState(p, p != target));
+        ResetCars();
+    }
+
+    private void SpawnCars(ParkingSpot[] parkingSpots)
+    {
+        foreach(var parkingSpot in parkingSpots)
         {
-            var car = cars[random.Next(cars.Length)];
-            var parkingSpot = parkingSpots[parkingSpotIdx];
-            
+            var car = cars[Random.Range(0, cars.Length - 1)];
             var offset = new Vector3(0, parkingSpot.transform.position.y, 0);
-            Instantiate(car, parkingSpot.transform.position - offset, parkingSpot.transform.rotation);
+            spawnedCars.Add(parkingSpot, Instantiate(car, parkingSpot.transform.position - offset, parkingSpot.transform.rotation));
         }
     }
 
-    private int[] GetUniqueParkingSpots(int count, int max)
+    private void SetCarState(ParkingSpot parkingSpot, bool state)
     {
-        var numbers = new List<int>();
+        spawnedCars[parkingSpot].SetActive(state);
+    }
 
-        while (numbers.Count < count)
+    private void ResetCars()
+    {
+        foreach (var spawnedCar in spawnedCars)
         {
-            var num = random.Next(max);
-            if (!numbers.Contains(num))
-            {
-                numbers.Add(num);
-            }
-        }
+            var parkingSpot = spawnedCar.Key;
+            var pos = parkingSpot.transform.position;
+            var rot = parkingSpot.transform.rotation;
 
-        return numbers.ToArray();
+            var car = spawnedCar.Value;
+            car.transform.position = new Vector3(pos.x, 0.03f, pos.z);
+            car.transform.rotation = rot;
+            car.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            car.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        }
     }
 }
