@@ -13,6 +13,10 @@ PrefabInstance:
       value: Street Light
       objectReference: {fileID: 0}
     - target: {fileID: 156908386531415818, guid: a75f87f78e3f44a44951785990249eb3, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 156908386531415818, guid: a75f87f78e3f44a44951785990249eb3, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}

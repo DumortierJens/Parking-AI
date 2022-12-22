@@ -9,13 +9,15 @@ public class Parking : MonoBehaviour
 {
     private CarSpawner carSpawner;
     private bool selectRandomTarget;
+    private bool selectOnlyOneSide;
     
     private ParkingSpot[] parkingSpots;
     private ParkingSpot target;
 
-    public void Initialize(bool selectRandomTarget)
+    public void Initialize(bool selectRandomTarget, bool selectOnlyOneSide)
     {
         this.selectRandomTarget = selectRandomTarget;
+        this.selectOnlyOneSide = selectOnlyOneSide;
 
         parkingSpots = GetComponentsInChildren<ParkingSpot>();
 
@@ -42,7 +44,16 @@ public class Parking : MonoBehaviour
             Array.ForEach(parkingSpots, p => p.IsTarget = false);
 
             // Select random target
-            target = parkingSpots[Random.Range(0, parkingSpots.Length - 1)];
+            if (selectOnlyOneSide)
+            {
+                var parkingSpotsOneSide = parkingSpots.Where(p => p.transform.position.x < 0).ToArray();
+                target = parkingSpotsOneSide[Random.Range(0, parkingSpotsOneSide.Length)];
+            }
+            else
+            {
+                target = parkingSpots[Random.Range(0, parkingSpots.Length)];
+            }
+
             target.IsTarget = true;
         }
         else

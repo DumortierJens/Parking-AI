@@ -32,6 +32,11 @@ public class Car : MonoBehaviour
         return GetComponent<Rigidbody>().velocity;
     }
 
+    public float GetSpeed()
+    {
+        return GetComponent<Rigidbody>().velocity.magnitude;
+    }
+
     public Vector3 GetAngularVelocity()
     {
         return GetComponent<Rigidbody>().angularVelocity;
