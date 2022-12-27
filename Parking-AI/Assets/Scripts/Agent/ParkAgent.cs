@@ -41,7 +41,8 @@ public class ParkAgent : Agent
     {
         // Reset environment
         env.Reset();
-        ResetCar(Random.Range(-1.75f, 1.75f), Random.Range(16f, 25f), 180); // Spawn near entry
+        ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-1.55f, 4.25f), 180f); // Spawn car
+        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-10f, 22.5f), Random.Range(170f, 190f)); // Spawn car
 
         // Get target
         target = env.GetTarget();
@@ -230,12 +231,14 @@ public class ParkAgent : Agent
         var currentRotation = transform.eulerAngles.y;
 
         // Calculate distance reward
-        var distanceToTarget = target.GetDistance(currentPosition);
-        var distanceReward = baseEndEpisodeReward * -Mathf.Pow(distanceToTarget / 2f, 2);
+        var distanceToTargetScoreX = target.GetDistanceScoreX(currentPosition);
+        var distanceToTargetScoreZ = target.GetDistanceScoreZ(currentPosition);
+        var distanceRewardX = baseEndEpisodeReward * -Mathf.Pow(distanceToTargetScoreX, 2);
+        var distanceRewardZ = baseEndEpisodeReward * -Mathf.Pow(distanceToTargetScoreZ, 2);
 
         // Calculate rotation reward
         var angleToTarget = target.GetAngle(currentRotation);
-        var rotationReward = baseEndEpisodeReward * -Mathf.Pow(angleToTarget / 22.5f, 2);
+        var rotationReward = baseEndEpisodeReward * -Mathf.Pow(angleToTarget / 90f * 4, 2);
 
         // Check if agent has parked
         var isStandingStill = car.GetSpeed() < 0.1f;
@@ -245,11 +248,11 @@ public class ParkAgent : Agent
         // Calculate step reward
         var stepReward = baseEndEpisodeReward * Mathf.Pow((hasParked ? MaxStep - StepCount : 0) / MaxStep, 2);
 
-        var episodeReward = distanceReward + rotationReward + stepReward;
+        var episodeReward = distanceRewardX + distanceRewardZ + rotationReward + stepReward;
         AddReward(episodeReward);
 
         // Log episode stats
-        Debug.Log($"Episode stats: Distance to target: {distanceToTarget}, Angle to target: {angleToTarget}");
+        Debug.Log($"Episode stats: Distance to target score X: {distanceToTargetScoreX}, Distance to target score Z: {distanceToTargetScoreZ}, Angle to target: {angleToTarget}");
         Debug.Log($"Episode reward: {episodeReward}");
     }
 }

@@ -408,6 +408,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5552730617957177682, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
+      propertyPath: m_BrainParameters.NumStackedVectorObservations
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5552730617957177682, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
       value: 3
       objectReference: {fileID: 0}
@@ -421,7 +425,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5565526795870417967, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.04
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5565526795870417967, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -429,7 +433,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5565526795870417967, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.26
+      value: -10.07
       objectReference: {fileID: 0}
     - target: {fileID: 5565526795870417967, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -437,7 +441,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5565526795870417967, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5565526795870417967, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_LocalRotation.y
@@ -445,7 +449,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5565526795870417967, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5565526795870417967, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -481,7 +485,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6765337388090909126, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: DecisionPeriod
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7356110920714341555, guid: ba0caa2641228e04293dd08a6fbdbef5, type: 3}
       propertyPath: m_Name
@@ -906,9 +910,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Record: 1
+  Record: 0
   NumStepsToRecord: 0
-  DemonstrationName: Park_v3.0.7
+  DemonstrationName: Park_v3.1.3
   DemonstrationDirectory: 
 --- !u!1 &963194225
 GameObject:

@@ -21,6 +21,16 @@ public class ParkingSpot : MonoBehaviour
         return (transform.position - position).magnitude;
     }
 
+    public float GetDistanceScoreX(Vector3 position)
+    {
+        return (transform.position - position).x / transform.lossyScale.x;
+    }
+
+    public float GetDistanceScoreZ(Vector3 position)
+    {
+        return (transform.position - position).z / transform.lossyScale.z;
+    }
+
     public float GetAngle(float rotation)
     {
         var rotationDifference = (transform.eulerAngles.y - rotation) % 180;
