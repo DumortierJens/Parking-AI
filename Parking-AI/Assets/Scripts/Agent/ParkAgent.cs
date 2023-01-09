@@ -41,8 +41,12 @@ public class ParkAgent : Agent
     {
         // Reset environment
         env.Reset();
-        ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-1.55f, 4.25f), 180f); // Spawn car
-        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-10f, 22.5f), Random.Range(170f, 190f)); // Spawn car
+
+        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-1.55f, 4.25f), Random.Range(-1f, 1f) > 0 ? 180f : 0f); // Spawn car (small radius)
+        ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-10f, 22.5f), Random.Range(-1f, 1f) > 0 ? 180f : 0f); // Spawn car (big radius)
+        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-1.55f, 4.25f), 180f); // Spawn car (small radius one direction)
+        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-10f, 22.5f), 180f); // Spawn car (big radius one direction)
+        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(16.5f, 22.5f), 180f);
 
         // Get target
         target = env.GetTarget();
