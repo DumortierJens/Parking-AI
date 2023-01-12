@@ -8,7 +8,9 @@ The main goal of this project is to train an agent that can successfully navigat
 
 ![Parking Environment](assets/ParkingEnvironment.png)
 
-![Parking Environment Video](assets/ParkingAI_v3.1.5.4.mp4)
+Video of the working Parking Agent:
+
+[![Parking AI video](https://img.youtube.com/vi/VfoVvwPWU8M/maxresdefault.jpg)](https://www.youtube.com/watch?v=VfoVvwPWU8M)
 
 ### Installation
 
