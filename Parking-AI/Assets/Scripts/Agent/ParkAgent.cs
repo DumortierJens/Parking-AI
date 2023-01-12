@@ -13,29 +13,27 @@ public class ParkAgent : Agent
     private Car car;
     private ParkingSpot target;
 
-    private float steerInput;
-    private float motorInput;
-    private float breakInput;
+    private float steeringInput;
+    private float accelerationInput;
+    private float breakingInput;
 
     private Vector3 prevPosition;
-    private float prevRotation;
-    private bool isInParkingSpot;
-    private int stepsStandingStill;
+    private int stepsNotMoving;
 
-    private float baseActionReward = 0.1f;
-    private float baseParkReward;
-    private float baseCollisionReward;
+    private float baseActionReward = 0.01f;
+    private float baseEndEpisodeReward;
 
     public override void Initialize()
     {
-        baseParkReward = MaxStep * baseActionReward;
-        baseCollisionReward = baseParkReward / -5f;
+        // Set base rewards
+        baseEndEpisodeReward = MaxStep * baseActionReward;
+        Debug.Log($"Base rewards: action: {baseActionReward}, finish: {baseEndEpisodeReward}");
 
-        Debug.Log($"Rewards: Base action reward: {baseActionReward}, Base park reward: {baseParkReward}, Base collision reward: {baseCollisionReward}");
-
+        // Initialize parking environment
         env = GetComponentInParent<ParkingEnvironment>();
         env.Initialize();
         
+        // Initialize car component
         car = GetComponent<Car>();
     }
 
@@ -43,16 +41,19 @@ public class ParkAgent : Agent
     {
         // Reset environment
         env.Reset();
-        ResetCar(Random.Range(-1.75f, 1.75f), Random.Range(16f, 25f), 180);
+
+        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-1.55f, 4.25f), Random.Range(-1f, 1f) > 0 ? 180f : 0f); // Spawn car (small radius)
+        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-10f, 22.5f), Random.Range(-1f, 1f) > 0 ? 180f : 0f); // Spawn car (big radius)
+        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-1.55f, 4.25f), 180f); // Spawn car (small radius one direction)
+        //ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(-10f, 22.5f), 180f); // Spawn car (big radius one direction)
+        ResetCar(Random.Range(-1.5f, 1.5f), Random.Range(16.5f, 22.5f), 180f);
 
         // Get target
         target = env.GetTarget();
 
         // Reset variables
         prevPosition = transform.position;
-        prevRotation = CalculateRotationToTarget(target.transform.eulerAngles.y - transform.eulerAngles.y);
-        isInParkingSpot = false;
-        stepsStandingStill = 0;
+        stepsNotMoving = 0;
     }
 
     private void ResetCar(float x, float z, float rot)
@@ -65,38 +66,40 @@ public class ParkAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        var position = car.GetPosition();
-        var velocity = car.GetVelocity();
-        var angularVelocity = car.GetAngularVelocity();
+        // Add car sensors
+        //sensor.AddObservation(car.GetPosition()); // TODO: prevent overfitting by changing target
+        sensor.AddObservation(car.GetVelocity());
+        sensor.AddObservation(car.GetAngularVelocity());
 
-        Debug.Log($"Agent observations: Position: {position}, Velocity: {velocity}, Angular velocity: {angularVelocity}");
-
-        sensor.AddObservation(position); // 2 floats
-        sensor.AddObservation(velocity); // 3 floats
-        sensor.AddObservation(angularVelocity); // 3 floats
+        // Add current car inputs
+        sensor.AddObservation(steeringInput);
+        sensor.AddObservation(accelerationInput);
+        sensor.AddObservation(breakingInput);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
-        continuousActions[0] = (int)Input.GetAxisRaw("Horizontal");
-        continuousActions[1] = (int)Input.GetAxisRaw("Vertical");
-        continuousActions[2] = Input.GetKey(KeyCode.Space) ? 1 : -1;
+        continuousActions[0] = (int)Input.GetAxisRaw("Horizontal"); // Steer angle
+        continuousActions[1] = (int)Input.GetAxisRaw("Vertical"); // Acceleration
+        continuousActions[2] = Input.GetKey(KeyCode.Space) ? 1 : -1; // Break
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
         // Get Input
-        steerInput = actions.ContinuousActions[0];
-        motorInput = actions.ContinuousActions[1];
-        breakInput = Mathf.Clamp(actions.ContinuousActions[2], 0, 1);
-        Debug.Log($"Steer angle: {steerInput}, Motor: {motorInput}, Break: {breakInput}");
+        steeringInput = actions.ContinuousActions[0];
+        accelerationInput = actions.ContinuousActions[1];
+        breakingInput = Mathf.Clamp(actions.ContinuousActions[2], 0, 1);
+        Debug.Log($"Car inputs: Steer angle: {steeringInput}, Acceleration: {accelerationInput}, Break: {breakingInput}");
 
         // Move the car
-        car.Move(steerInput, motorInput, breakInput);
+        car.Move(steeringInput, accelerationInput, breakingInput);
 
-        // Calculate reward for action
-        AddReward(CalculateReward());
+        // Evaluate action
+        EvaluateAction();
+
+        // Log current reward
         Debug.Log($"Current reward: {GetCumulativeReward()}");
     }
 
@@ -105,139 +108,155 @@ public class ParkAgent : Agent
         // Collision with car
         if (collision.gameObject.TryGetComponent(out Car car))
         {
-            AddReward(baseCollisionReward);
+            Collision("Car");
         }
 
         // Collision with tree
         else if (collision.gameObject.TryGetComponent(out Tree tree))
         {
-            AddReward(baseCollisionReward);
+            Collision("Tree");
         }
 
         // Collision with street light
         else if (collision.gameObject.TryGetComponent(out StreetLight streetLight))
         {
-            AddReward(baseCollisionReward);
+            Collision("Street Light");
         }
 
         // Collision with sidewalk
         else if (collision.gameObject.TryGetComponent(out Sidewalk sidewalk))
         {
-            AddReward(baseCollisionReward);
+            Collision("Car", 0.1f);
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void Collision(string objectName, float multiplier = 1f)
     {
-        // Out of world
-        if (other.gameObject.TryGetComponent(out WorldBorder worldBorder))
+        var reward = -1f * baseEndEpisodeReward * multiplier;
+        Debug.Log($"Collision with {objectName} (reward: {reward})");
+        AddReward(reward);
+    }
+
+    private void OnTriggerEnter(Collider collider)
+    {
+        // End episode if agent is out of the world
+        if (collider.gameObject.TryGetComponent(out WorldBorder worldBorder))
         {
-            AddReward(-10 * baseParkReward);
-            EndEpisode("Outside world border");
+            var reward = -100 * baseEndEpisodeReward;
+            AddReward(reward);
+            EndEpisode("Out of world");
         }
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider collider)
     {
-        // Agent is in parking spot - Fix OnTriggerEnter (Not always working if car moves to fast)
-        if (other.gameObject.TryGetComponent(out ParkingSpot parkingSpot) && parkingSpot.IsTarget && !isInParkingSpot)
+        // If agent drives on sidewalk
+        if (collider.gameObject.TryGetComponent(out Sidewalk sidewalk))
         {
-            isInParkingSpot = true;
-            AddReward(baseParkReward);
+            AddReward(-baseActionReward * 1);
         }
-    }
 
-    private void OnTriggerExit(Collider other)
-    {
-        // Agent exits parking spot
-        if (other.gameObject.TryGetComponent(out ParkingSpot parkingSpot) && parkingSpot.IsTarget && isInParkingSpot)
+        // If agent drives on grass
+        if (collider.gameObject.TryGetComponent(out OffRoad offRoad))
         {
-            isInParkingSpot = false;
-            AddReward(-baseParkReward);
+            AddReward(-baseActionReward * 2);
+        }
+
+        // If agent drives on target
+        if (collider.gameObject.TryGetComponent(out ParkingSpot parkingSpot) && parkingSpot.IsTarget)
+        {
+            AddReward(baseActionReward * 2);
         }
     }
 
-    private float CalculateReward()
+    private void EvaluateAction()
     {
-        // Position
         var currentPosition = transform.position;
-        var targetPosition = target.transform.position;
-
-        var distanceToTarget = (targetPosition - currentPosition).magnitude;
-        var prevDistanceToTarget = (targetPosition - prevPosition).magnitude;
-        var distanceDifference = prevDistanceToTarget - distanceToTarget;
-        prevPosition = currentPosition;
-
-        // Rotation
         var currentRotation = transform.eulerAngles.y;
-        var targetRotation = target.transform.eulerAngles.y;
 
-        var rotationToTarget = CalculateRotationToTarget(targetRotation - currentRotation);
-        var prevRotationToTarget = CalculateRotationToTarget(targetRotation - prevRotation);
-        var rotationDifference = prevRotationToTarget - rotationToTarget;
-        prevRotation = currentRotation;
+        // Calculate distance to target difference
+        var distanceToTarget = target.GetDistance(currentPosition);
+        var prevDistanceToTarget = target.GetDistance(prevPosition);
+        var distanceToTargetDifference = prevDistanceToTarget - distanceToTarget;
 
-        // Calculate action reward
-        var actionReward = CalculateActionReward(distanceDifference, rotationDifference);
-
-        // Check if car is not moving
-        var isStandingStill = Mathf.Abs(distanceDifference) < 0.01;
-        stepsStandingStill = isStandingStill ? stepsStandingStill + 1 : 0;
-        if (stepsStandingStill > 200)
-        {
-            var standingStillReward = -baseParkReward + ((MaxStep - StepCount) * -baseActionReward);
-            AddReward((isInParkingSpot ? 0.5f : 1) * standingStillReward);
-            EndEpisode("Agent standing still");
-        }
-
-        Debug.Log($"Action: Distance difference: {distanceDifference}, Distance to target: {distanceToTarget}, Rotation difference: {rotationDifference}, Rotation to target: {rotationToTarget}, Is in parking spot: {isInParkingSpot}, Is standing still: {isStandingStill}, Steps standing still: {stepsStandingStill}");
+        // Calculate angle to target
+        var angleToTarget = target.GetAngle(currentRotation);
 
         // Check if agent has parked
-        var maxDistanceToTarget = 1.5f;
-        var maxRotationToTarget = 35;
-        if (isInParkingSpot && Mathf.Abs(distanceDifference) <= 0.00001 && distanceToTarget <= maxDistanceToTarget && rotationToTarget <= maxRotationToTarget)
+        var isStandingStill = car.GetSpeed() < 0.1f;
+        var isInParkingSpot = target.IsInParkingSpot(currentPosition);
+        var hasParked = isStandingStill && isInParkingSpot;
+
+        // Calculate action reward
+        var actionreward = -baseActionReward;
+        actionreward += baseActionReward * distanceToTargetDifference;
+        AddReward(actionreward);
+
+        // End episode if agent has parked
+        if (hasParked)
         {
-            var endEpisodeReward = CalculateParkReward(distanceToTarget, maxDistanceToTarget, rotationToTarget, maxRotationToTarget);
-            AddReward(endEpisodeReward);
-            EndEpisode("Agent parked");
+            AddReward(baseEndEpisodeReward);
+            EndEpisode("Parked");
         }
 
-        return actionReward;
-    }
+        // End episode if agent is not moving
+        Debug.Log("Speed: " + car.GetSpeed());
+        stepsNotMoving = car.GetSpeed() < 0.8f ? stepsNotMoving+1 : 0;
+        if (stepsNotMoving > 200)
+        {
+            AddReward(-baseEndEpisodeReward);
+            EndEpisode("Not moving");
+        }
 
-    private float CalculateRotationToTarget(float rotationDifference)
-    {
-        rotationDifference %= 180;
-        var rotationToTarget = Mathf.Abs(rotationDifference <= 90 ? rotationDifference : 180 - rotationDifference);
-        return rotationToTarget;
-    }
+        // End episode if max steps is reached
+        if (StepCount >= MaxStep)
+        {
+            EndEpisode("Max steps reached");
+        }
 
-    private float CalculateActionReward(float distanceDiff, float rotationDiff)
-    {
-        var stepReward = -1 * baseActionReward;
-        var distanceReward = distanceDiff * baseActionReward * 100;
-        var rotationReward = rotationDiff * baseActionReward * 100;
+        // Log action stats
+        Debug.Log($"Action stats: Distance to target: {distanceToTarget}, Distance to target difference: {distanceToTargetDifference}, Angle to target: {angleToTarget}, Is in parking spot: {isInParkingSpot}, Is standing still: {isStandingStill}, Steps not moving: {stepsNotMoving}, Has parked: {hasParked}");
+        Debug.Log($"Action reward: {actionreward}");
 
-        var totalReward = stepReward + distanceReward + rotationReward;
-        Debug.Log($"Total action reward (Step: {StepCount}): {totalReward}, Distance reward: {distanceReward}, Rotation reward: {rotationReward}");
-
-        return totalReward;
-    }
-
-    private float CalculateParkReward(float distanceToTarget, float maxDistanceToTarget, float rotationDiff, float maxRotationDiff)
-    {
-        var distanceReward = (1 - distanceToTarget / maxDistanceToTarget) * baseParkReward;
-        var rotationReward = (1 - rotationDiff / maxRotationDiff) * baseParkReward;
-
-        var totalReward = baseParkReward + distanceReward + rotationReward;
-        Debug.Log($"Total end episode reward (Step: {StepCount}): {totalReward}, Distance reward: {distanceReward}, Rotation reward: {rotationReward}");
-
-        return totalReward;
+        // Update variables
+        prevPosition = transform.position;
     }
 
     private void EndEpisode(string reason)
     {
-        Debug.Log($"End of episode {CompletedEpisodes}, total reward: {GetCumulativeReward()}, total staps: {StepCount}, reason: {reason}");
+        EvaluateEpisode();
+        Debug.Log($"End of episode {CompletedEpisodes} (reason: {reason}): Total reward: {GetCumulativeReward()}, Total steps: {StepCount}");
         EndEpisode();
+    }
+
+    private void EvaluateEpisode()
+    {
+        var currentPosition = transform.position;
+        var currentRotation = transform.eulerAngles.y;
+
+        // Calculate distance reward
+        var distanceToTargetScoreX = target.GetDistanceScoreX(currentPosition);
+        var distanceToTargetScoreZ = target.GetDistanceScoreZ(currentPosition);
+        var distanceRewardX = baseEndEpisodeReward * -Mathf.Pow(distanceToTargetScoreX, 2);
+        var distanceRewardZ = baseEndEpisodeReward * -Mathf.Pow(distanceToTargetScoreZ, 2);
+
+        // Calculate rotation reward
+        var angleToTarget = target.GetAngle(currentRotation);
+        var rotationReward = baseEndEpisodeReward * -Mathf.Pow(angleToTarget / 90f * 4, 2);
+
+        // Check if agent has parked
+        var isStandingStill = car.GetSpeed() < 0.1f;
+        var isInParkingSpot = target.IsInParkingSpot(currentPosition);
+        var hasParked = isStandingStill && isInParkingSpot;
+
+        // Calculate step reward
+        var stepReward = baseEndEpisodeReward * Mathf.Pow((hasParked ? MaxStep - StepCount : 0) / MaxStep, 2);
+
+        var episodeReward = distanceRewardX + distanceRewardZ + rotationReward + stepReward;
+        AddReward(episodeReward);
+
+        // Log episode stats
+        Debug.Log($"Episode stats: Distance to target score X: {distanceToTargetScoreX}, Distance to target score Z: {distanceToTargetScoreZ}, Angle to target: {angleToTarget}");
+        Debug.Log($"Episode reward: {episodeReward}");
     }
 }

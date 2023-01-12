@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class ParkingEnvironment : MonoBehaviour
 {
-    [SerializeField] private bool selectRandomTarget;
+    [SerializeField] private bool onlySelectedTargets;
+    [SerializeField] private bool leftTargets;
+    [SerializeField] private bool rightTargets;
 
     private Parking parking;
     
@@ -15,7 +17,7 @@ public class ParkingEnvironment : MonoBehaviour
     {
         // Init Parking
         parking = GetComponentInChildren<Parking>();
-        parking.Initialize(selectRandomTarget);
+        parking.Initialize(onlySelectedTargets, leftTargets, rightTargets);
 
         // Init trees
         trees = GetComponentsInChildren<Tree>();

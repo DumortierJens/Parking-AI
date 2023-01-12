@@ -8,16 +8,22 @@ using Random = UnityEngine.Random;
 public class Parking : MonoBehaviour
 {
     private CarSpawner carSpawner;
-    private bool selectRandomTarget;
-    
+    private bool onlySelectedTargets;
+    private bool leftTargets;
+    private bool rightTargets;
+
     private ParkingSpot[] parkingSpots;
+    private ParkingSpot[] validParkingSpots;
     private ParkingSpot target;
 
-    public void Initialize(bool selectRandomTarget)
+    public void Initialize(bool onlySelectedTargets, bool leftTargets, bool rightTargets)
     {
-        this.selectRandomTarget = selectRandomTarget;
+        this.onlySelectedTargets = onlySelectedTargets;
+        this.leftTargets = leftTargets;
+        this.rightTargets = rightTargets;
 
         parkingSpots = GetComponentsInChildren<ParkingSpot>();
+        validParkingSpots = InitializeValidParkingSpots(parkingSpots);
 
         carSpawner = GetComponent<CarSpawner>();
         carSpawner.Initialize(parkingSpots);
@@ -34,28 +40,35 @@ public class Parking : MonoBehaviour
         return target;
     }
 
+    private ParkingSpot[] InitializeValidParkingSpots(ParkingSpot[] parkingSpots)
+    {
+        validParkingSpots = parkingSpots.Where(p => (p.IsTarget || !onlySelectedTargets) && !p.IsIgnored).ToArray();
+
+        if (leftTargets || rightTargets)
+        {
+            validParkingSpots = validParkingSpots.Where(p => (p.transform.position.x > 0 && leftTargets) || (p.transform.position.x < 0 && rightTargets)).ToArray();
+        }
+
+        return validParkingSpots;
+    }
+
     private void SelectTarget()
     {
-        if (selectRandomTarget)
-        {
-            // Clear isTarget properties
-            Array.ForEach(parkingSpots, p => p.IsTarget = false);
+        // Clear isTarget properties
+        Array.ForEach(parkingSpots, p => p.IsTarget = false);
 
-            // Select random target
-            target = parkingSpots[Random.Range(0, parkingSpots.Length - 1)];
-            target.IsTarget = true;
+        // Select random target
+        target = validParkingSpots[Random.Range(0, validParkingSpots.Length)];
+
+        // If target is null, select random
+        if (target == null)
+        {
+            onlySelectedTargets = false;
+            SelectTarget();
         }
         else
         {
-            // Select target
-            target = parkingSpots.Where(p => p.IsTarget).FirstOrDefault();
-
-            // If target is null, select random
-            if (target == null)
-            {
-                selectRandomTarget = true;
-                SelectTarget();
-            }
+            target.IsTarget = true;
         }
     }
 }
