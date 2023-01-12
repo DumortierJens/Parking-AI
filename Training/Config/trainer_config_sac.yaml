@@ -1,0 +1,40 @@
+behaviors:
+    Park:
+        # Trainer configurations
+        trainer_type: sac
+        summary_freq: 50000
+        max_steps: 100000000
+        time_horizon: 1024
+        threaded: True
+        keep_checkpoints: 20
+        checkpoint_interval: 5000000
+
+        # Hyperparameters
+        hyperparameters:
+            batch_size: 1024
+            buffer_size: 200000
+            learning_rate: 1.0e-3
+            learning_rate_schedule: constant
+
+            # SAC specific
+            buffer_init_steps: 5000
+            steps_per_update: 80
+            init_entcoef: 1.0
+            save_replay_buffer: False
+            tau: 0.005
+
+        # Neural network settings
+        network_settings:
+            normalize: True
+            hidden_units: 256
+            num_layers: 3
+            vis_encode_type: simple
+
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+            gail:
+                strength: 0.3
+                gamma: 0.99
+                demo_path: path to the demo file
