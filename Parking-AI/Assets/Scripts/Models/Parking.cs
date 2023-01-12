@@ -42,7 +42,7 @@ public class Parking : MonoBehaviour
 
     private ParkingSpot[] InitializeValidParkingSpots(ParkingSpot[] parkingSpots)
     {
-        validParkingSpots = parkingSpots.Where(p => p.IsTarget || !onlySelectedTargets).ToArray();
+        validParkingSpots = parkingSpots.Where(p => (p.IsTarget || !onlySelectedTargets) && !p.IsIgnored).ToArray();
 
         if (leftTargets || rightTargets)
         {

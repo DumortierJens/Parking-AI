@@ -5,6 +5,7 @@ using UnityEngine;
 public class ParkingSpot : MonoBehaviour
 {
     public bool IsTarget;
+    public bool IsIgnored;
     
     public bool IsInParkingSpot(Vector3 position)
     {
